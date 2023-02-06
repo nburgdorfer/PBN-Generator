@@ -203,3 +203,7 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+*.png
+*.jpg
+*.jpeg
