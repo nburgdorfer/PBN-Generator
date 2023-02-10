@@ -19,29 +19,6 @@ def display_palette(color_names, color_codes):
     for n,c in zip(color_names, color_codes):
         print("{}: {}".format(n,c))
 
-def gaussian_blur(image, w, sd):
-    n = int((w-1)/2)
-    g = np.zeros((w,w))
-    for i in range(-n,n):
-        for j in range(-n,n):
-            base = (2*np.pi*(sd**2))**(-1)
-            ex = -(i**2 + j**2)/(2*(sd**2))
-            gaus = (base) * (np.exp(ex))
-            g[i+n,j+n] = float(gaus)
-
-    (height,width,_) = image.shape
-    smoothed = np.copy(image)
-    pad = np.pad(smoothed,n,mode='edge')
-
-    #smoothing
-    for y in range(n,height+n):
-        for x in range(n,width+n):
-            sub = pad[y-n:y+n+1,x-n:x+n+1]
-            dp = sub*g
-            smoothed[y-n,x-n] = int(np.sum(dp))
-
-    return smoothed
-
 def segment_image(image, color_codes):
     k = len(color_codes)
     pixels = np.float32(image.reshape((-1,3)))
@@ -86,8 +63,8 @@ def draw_borders(image):
             if (diff > 0):
                 b_img[r,c] = np.array([0,0,0])
             else:
-                b_img[r,c] = c_center
-                #b_img[r,c] = np.array([255,255,255])
+                #b_img[r,c] = c_center
+                b_img[r,c] = np.array([255,255,255])
 
     return b_img
 
@@ -102,25 +79,17 @@ def main():
 
     print("Loading image...")
     image = load_image(ARGS.image)
-    cv2.imwrite("input.png", image)
-
-    #   print("Blurring image...")
-    #   image = gaussian_blur(image, 7, 3)
-    #   cv2.imwrite("blur.png", image)
 
     print("Segmenting image...")
     image = segment_image(image, color_codes)
-    cv2.imwrite("seg.png", image)
 
     print("Smoothing image...")
     image = smooth(image, k=ARGS.filter_size)
-    cv2.imwrite("filt.png", image)
-
+    cv2.imwrite("Colored_Image.png", image)
 
     print("Drawing borders")
     image = draw_borders(image)
-
-    cv2.imwrite("pbn.png", image)
+    cv2.imwrite("PBN_Image.png", image)
 
 
 if __name__=="__main__":
