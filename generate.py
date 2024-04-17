@@ -79,6 +79,7 @@ def main():
 
     print("Loading image...")
     image = load_image(ARGS.image)
+    image = smooth(image, k=ARGS.filter_size)
 
     print("Segmenting image...")
     image = segment_image(image, color_codes)
