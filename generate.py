@@ -1,10 +1,7 @@
 import numpy as np
-import sys
-import os
 import yaml
 import argparse
 import cv2
-import matplotlib.pyplot as plt
 from PIL import Image, ImageFilter
 
 ## Argument Parsing ##
@@ -24,7 +21,7 @@ def segment_image(image, color_codes):
     pixels = np.float32(image.reshape((-1,3)))
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.85)
-    retval, labels, centers = cv2.kmeans(pixels, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    _, labels, centers = cv2.kmeans(pixels, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
     centers = np.uint8(centers)
     segmented_data = centers[labels.flatten()]
     segmented_image = segmented_data.reshape((image.shape))
@@ -68,11 +65,13 @@ def draw_borders(image):
 
     return b_img
 
+
 def smooth(image, k=9):
-    image = image / np.max(image)
-    img = Image.fromarray(np.uint8(image*255))
-    filt_image = img.filter(ImageFilter.ModeFilter(size = k)) 
-    return np.asarray(filt_image)
+    if k <= 1:
+        return image
+    if k % 2 == 0:
+        k += 1
+    return cv2.bilateralFilter(image, k, sigmaColor=55, sigmaSpace=55)
 
 def main():
     (color_names, color_codes) = get_palette(ARGS.color_palette)
@@ -80,17 +79,19 @@ def main():
     print("Loading image...")
     image = load_image(ARGS.image)
     image = smooth(image, k=ARGS.filter_size)
+    cv2.imwrite("smoothed_1.png", image[:,:,::-1])
 
     print("Segmenting image...")
     image = segment_image(image, color_codes)
+    cv2.imwrite("segmented.png", image)
 
     print("Smoothing image...")
     image = smooth(image, k=ARGS.filter_size)
-    cv2.imwrite("Colored_Image.png", image)
+    cv2.imwrite("smoothed_2.png", image)
 
     print("Drawing borders")
     image = draw_borders(image)
-    cv2.imwrite("PBN_Image.png", image)
+    cv2.imwrite("pbn.png", image)
 
 
 if __name__=="__main__":

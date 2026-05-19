@@ -1,0 +1,37 @@
+input:
+  image: data/squirrel.jpg
+  # Set to null to generate a palette from the input image.
+  palette: palettes/palette_1.yaml
+
+canvas:
+  # Maximum final size. The image keeps its original aspect ratio inside this box.
+  size: [8.0, 10.0]
+  dpi: 150
+
+regions:
+  # Minimum connected paint section area in square inches.
+  min_area: 0.05
+  merge_passes: 2
+
+smoothing:
+  image_filter_size: 11
+  label_smooth_size: 3
+  label_smooth_passes: 2
+
+quantization:
+  mode: clustered
+  generated_palette_size: 10
+  # True lets each image cluster choose its nearest palette color. False forces every
+  # palette color to be used, which can make colors look swapped on some images.
+  allow_unused_palette_colors: true
+
+output:
+  prefix: yosemite_pbn
+  border_thickness: 0
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: .
+  output_subdir: null
