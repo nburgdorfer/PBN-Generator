@@ -33,7 +33,7 @@ class ClusterLabelerConfig:
 class LabelProcessorConfig:
     name: str = "smooth_merge"
     min_area: float = 0.005
-    min_width_px: int = 8
+    min_width_inches: float = 0.125
     merge_passes: int = 1
     label_smooth_size: int = 3
     label_smooth_passes: int = 2

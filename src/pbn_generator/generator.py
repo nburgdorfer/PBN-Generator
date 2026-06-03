@@ -117,6 +117,8 @@ class PBNGenerator:
         cfg = self.config
         if cfg.label_processor.min_area < 0:
             raise ValueError("Minimum region area must be non-negative.")
+        if cfg.label_processor.min_width_inches < 0:
+            raise ValueError("Minimum region width must be non-negative.")
         if cfg.canvas.dpi <= 0:
             raise ValueError("DPI must be positive.")
         if cfg.input.palette is not None and str(cfg.input.palette).strip() == "":

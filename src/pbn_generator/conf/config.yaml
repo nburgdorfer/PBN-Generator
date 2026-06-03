@@ -5,7 +5,7 @@ input:
 canvas:
   # Maximum final size. The image keeps its original aspect ratio inside this box.
   size: [8.0, 10.0]
-  dpi: 150
+  dpi: 300
 
 image_preprocessor:
   name: bilateral
@@ -20,7 +20,7 @@ label_processor:
   # Minimum connected paint section area in square inches.
   min_area: 0.005
   # Used by distance_transform_merge and morphological_open_merge.
-  min_width_px: 8
+  min_width_inches: 0.125
   merge_passes: 2
   label_smooth_size: 3
   label_smooth_passes: 2

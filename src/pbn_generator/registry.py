@@ -68,8 +68,9 @@ def build_label_processor(
             label_smooth_passes=config.label_smooth_passes,
         )
 
+    min_width_px = max(1, int(round(config.min_width_inches * dpi)))
     return processor_type(
-        min_width_px=config.min_width_px,
+        min_width_px=min_width_px,
         merge_passes=config.merge_passes,
         label_smooth_size=config.label_smooth_size,
         label_smooth_passes=config.label_smooth_passes,

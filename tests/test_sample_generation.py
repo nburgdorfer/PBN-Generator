@@ -19,6 +19,7 @@ from pbn_generator import (
     PaletteGeneratorConfig,
     SmoothMergeProcessor,
 )
+from pbn_generator.registry import build_label_processor
 
 
 def test_sample_data_and_palette_generate_manual_outputs():
@@ -140,6 +141,22 @@ def test_morphological_open_processor_merges_narrow_regions():
     processed = processor.process(labels, colors_rgb)
 
     assert np.all(processed == 0)
+
+
+def test_label_processor_min_width_inches_converts_to_pixels():
+    processor = build_label_processor(
+        LabelProcessorConfig(
+            name="distance_transform_merge",
+            min_width_inches=0.1,
+            merge_passes=1,
+            label_smooth_size=1,
+            label_smooth_passes=0,
+        ),
+        dpi=300,
+    )
+
+    assert isinstance(processor, DistanceTransformMergeProcessor)
+    assert processor.min_width_px == 30
 
 
 def test_sample_data_can_generate_palette_from_image():
