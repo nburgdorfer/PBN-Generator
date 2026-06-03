@@ -33,7 +33,7 @@ class ClusterLabelerConfig:
 class LabelProcessorConfig:
     name: str = "smooth_merge"
     min_area: float = 0.005
-    min_width_px: int = 12
+    min_width_px: int = 8
     merge_passes: int = 1
     label_smooth_size: int = 3
     label_smooth_passes: int = 2
@@ -41,7 +41,7 @@ class LabelProcessorConfig:
 
 @dataclass
 class PaletteGeneratorConfig:
-    num_colors: int = 20
+    num_colors: int = 25
 
 
 @dataclass

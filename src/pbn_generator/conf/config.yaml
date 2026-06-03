@@ -16,17 +16,17 @@ cluster_labeler:
   allow_unused_palette_colors: true
 
 label_processor:
-  name: morphological_open_merge
+  name: distance_transform_merge
   # Minimum connected paint section area in square inches.
   min_area: 0.005
   # Used by distance_transform_merge and morphological_open_merge.
-  min_width_px: 12
+  min_width_px: 8
   merge_passes: 2
   label_smooth_size: 3
   label_smooth_passes: 2
 
 palette_generator:
-  num_colors: 50
+  num_colors: 25
 
 output:
   directory: output

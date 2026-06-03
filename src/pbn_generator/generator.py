@@ -81,7 +81,7 @@ class PBNGenerator:
                 self._resolve_path(cfg.input.palette)
             )
         print_palette_legend(names, codes)
-        _logger.info("Assigning pixels to palette colors with K-means clustering...")
+        _logger.info("Generating pixel cluster labels...")
         labels = self.cluster_labeler.label(image, colors_rgb)
 
         labels = self.label_processor.process(labels, colors_rgb)
