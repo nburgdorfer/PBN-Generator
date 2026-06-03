@@ -14,7 +14,7 @@ class InputConfig:
 @dataclass
 class CanvasConfig:
     size: tuple[float, float] = (8.0, 10.0)
-    dpi: int = 300
+    dpi: int = 150
 
 
 @dataclass

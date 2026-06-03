@@ -5,7 +5,7 @@ input:
 canvas:
   # Maximum final size. The image keeps its original aspect ratio inside this box.
   size: [8.0, 10.0]
-  dpi: 300
+  dpi: 150
 
 image_preprocessor:
   name: bilateral
