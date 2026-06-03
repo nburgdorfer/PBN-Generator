@@ -25,6 +25,33 @@ def load_palette(palette_file: str | Path) -> tuple[list[str], list[str], np.nda
     return names, codes, colors
 
 
+def generate_palette(
+    image_rgb: np.ndarray,
+    num_colors: int,
+) -> tuple[list[str], list[str], np.ndarray]:
+    if num_colors <= 0:
+        raise ValueError("Number of generated palette colors must be positive.")
+
+    image_lab = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2LAB)
+    pixels = image_lab.reshape(-1, 3).astype(np.float32)
+    k = min(num_colors, pixels.shape[0])
+
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.85)
+    _, _, centers_lab = cv2.kmeans(
+        pixels,
+        k,
+        None,
+        criteria,
+        10,
+        cv2.KMEANS_RANDOM_CENTERS,
+    )
+    colors_rgb = lab_centers_to_rgb(centers_lab)
+    colors_rgb = sort_palette_by_lightness(colors_rgb)
+    names = [f"generated-{index:02d}" for index in range(1, len(colors_rgb) + 1)]
+    codes = [rgb_to_hex(color) for color in colors_rgb]
+    return names, codes, colors_rgb
+
+
 def hex_to_rgb(code: str) -> tuple[int, int, int]:
     value = str(code).strip().lstrip("#")
     if len(value) == 3:
@@ -37,6 +64,22 @@ def hex_to_rgb(code: str) -> tuple[int, int, int]:
 def palette_lab(colors_rgb: np.ndarray) -> np.ndarray:
     colors = colors_rgb.reshape(1, -1, 3)
     return cv2.cvtColor(colors, cv2.COLOR_RGB2LAB).reshape(-1, 3).astype(np.float32)
+
+
+def lab_centers_to_rgb(centers_lab: np.ndarray) -> np.ndarray:
+    centers = np.clip(np.rint(centers_lab), 0, 255).astype(np.uint8)
+    centers = centers.reshape(1, -1, 3)
+    return cv2.cvtColor(centers, cv2.COLOR_LAB2RGB).reshape(-1, 3)
+
+
+def sort_palette_by_lightness(colors_rgb: np.ndarray) -> np.ndarray:
+    lightness = palette_lab(colors_rgb)[:, 0]
+    return colors_rgb[np.argsort(lightness)]
+
+
+def rgb_to_hex(color: np.ndarray) -> str:
+    r, g, b = [int(channel) for channel in color]
+    return f"#{r:02X}{g:02X}{b:02X}"
 
 
 def format_hex_code(code: str) -> str:

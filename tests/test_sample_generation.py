@@ -1,16 +1,22 @@
 from pathlib import Path
 
+import numpy as np
+from PIL import Image
+
 from pbn_generator import (
     BilateralPreprocessor,
     CanvasConfig,
     ClusterLabelerConfig,
+    DistanceTransformMergeProcessor,
     ImagePreprocessorConfig,
     InputConfig,
     KMeansLabeler,
     LabelProcessorConfig,
+    MorphologicalOpenMergeProcessor,
     OutputConfig,
     PBNConfig,
     PBNGenerator,
+    PaletteGeneratorConfig,
     SmoothMergeProcessor,
 )
 
@@ -87,3 +93,78 @@ def test_sample_data_and_palette_generate_manual_outputs():
     assert result.outline_path.exists()
     assert result.palette_path.exists()
     assert result.intermediate_path.exists()
+
+    colored = np.asarray(Image.open(result.colored_path).convert("RGB"))
+    assert not np.any(np.all(colored == [0, 0, 0], axis=2))
+
+
+def test_distance_transform_processor_merges_narrow_regions():
+    labels = np.zeros((7, 7), dtype=np.int32)
+    labels[:, 3] = 1
+    colors_rgb = np.array(
+        [
+            [255, 255, 255],
+            [255, 0, 0],
+        ],
+        dtype=np.uint8,
+    )
+    processor = DistanceTransformMergeProcessor(
+        min_width_px=3,
+        merge_passes=1,
+        label_smooth_size=1,
+        label_smooth_passes=0,
+    )
+
+    processed = processor.process(labels, colors_rgb)
+
+    assert np.all(processed == 0)
+
+
+def test_morphological_open_processor_merges_narrow_regions():
+    labels = np.zeros((7, 7), dtype=np.int32)
+    labels[:, 3] = 1
+    colors_rgb = np.array(
+        [
+            [255, 255, 255],
+            [255, 0, 0],
+        ],
+        dtype=np.uint8,
+    )
+    processor = MorphologicalOpenMergeProcessor(
+        min_width_px=3,
+        merge_passes=1,
+        label_smooth_size=1,
+        label_smooth_passes=0,
+    )
+
+    processed = processor.process(labels, colors_rgb)
+
+    assert np.all(processed == 0)
+
+
+def test_sample_data_can_generate_palette_from_image():
+    repo_root = Path(__file__).resolve().parents[1]
+    config = PBNConfig(
+        input=InputConfig(
+            image="data/hills.jpg",
+            palette=None,
+        ),
+        canvas=CanvasConfig(size=(2.0, 2.0), dpi=30),
+        label_processor=LabelProcessorConfig(
+            min_area=0.05,
+            merge_passes=1,
+            label_smooth_passes=1,
+        ),
+        palette_generator=PaletteGeneratorConfig(num_colors=6),
+        output=OutputConfig(directory="output", write_intermediate=False),
+    )
+
+    result = PBNGenerator(config, base_dir=repo_root).run()
+
+    assert result.colored_path == repo_root / "output/hills_colored.png"
+    assert result.outline_path == repo_root / "output/hills_outline.png"
+    assert result.palette_path == repo_root / "output/hills_palette.png"
+    assert result.intermediate_path is None
+    assert result.colored_path.exists()
+    assert result.outline_path.exists()
+    assert result.palette_path.exists()

@@ -8,7 +8,7 @@ from typing import Any, get_origin, get_type_hints
 @dataclass
 class InputConfig:
     image: str | Path
-    palette: str | Path
+    palette: str | Path | None = None
 
 
 @dataclass
@@ -20,7 +20,7 @@ class CanvasConfig:
 @dataclass
 class ImagePreprocessorConfig:
     name: str = "bilateral"
-    filter_size: int = 11
+    filter_size: int = 7
 
 
 @dataclass
@@ -33,9 +33,15 @@ class ClusterLabelerConfig:
 class LabelProcessorConfig:
     name: str = "smooth_merge"
     min_area: float = 0.005
+    min_width_px: int = 12
     merge_passes: int = 1
     label_smooth_size: int = 3
     label_smooth_passes: int = 2
+
+
+@dataclass
+class PaletteGeneratorConfig:
+    num_colors: int = 20
 
 
 @dataclass
@@ -54,6 +60,9 @@ class PBNConfig:
     )
     cluster_labeler: ClusterLabelerConfig = field(default_factory=ClusterLabelerConfig)
     label_processor: LabelProcessorConfig = field(default_factory=LabelProcessorConfig)
+    palette_generator: PaletteGeneratorConfig = field(
+        default_factory=PaletteGeneratorConfig
+    )
     output: OutputConfig = field(default_factory=OutputConfig)
 
     @classmethod

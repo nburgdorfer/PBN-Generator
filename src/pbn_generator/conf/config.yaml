@@ -1,6 +1,6 @@
 input:
   image: data/hills.jpg
-  palette: palettes/palette_1.yaml
+  palette: null
 
 canvas:
   # Maximum final size. The image keeps its original aspect ratio inside this box.
@@ -9,21 +9,24 @@ canvas:
 
 image_preprocessor:
   name: bilateral
-  filter_size: 11
+  filter_size: 9
 
 cluster_labeler:
   name: kmeans
-  # True lets each image cluster choose its nearest palette color. False forces every
-  # palette color to be used, which can make colors look swapped on some images.
   allow_unused_palette_colors: true
 
 label_processor:
-  name: smooth_merge
+  name: morphological_open_merge
   # Minimum connected paint section area in square inches.
-  min_area: 0.05
+  min_area: 0.005
+  # Used by distance_transform_merge and morphological_open_merge.
+  min_width_px: 12
   merge_passes: 2
   label_smooth_size: 3
   label_smooth_passes: 2
+
+palette_generator:
+  num_colors: 50
 
 output:
   directory: output
