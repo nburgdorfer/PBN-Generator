@@ -31,9 +31,9 @@ class ClusterLabelerConfig:
 
 @dataclass
 class LabelProcessorConfig:
-    name: str = "smooth_merge"
+    name: str = "morphological_open_merge"
     min_area: float = 0.005
-    min_width_inches: float = 0.15
+    min_width_inches: float = 0.10
     merge_passes: int = 1
     label_smooth_size: int = 3
     label_smooth_passes: int = 2
