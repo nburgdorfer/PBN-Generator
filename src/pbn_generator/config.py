@@ -41,7 +41,7 @@ class LabelProcessorConfig:
 
 @dataclass
 class PaletteGeneratorConfig:
-    num_colors: int = 25
+    num_colors: int = 40
 
 
 @dataclass

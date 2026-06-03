@@ -26,7 +26,7 @@ label_processor:
   label_smooth_passes: 2
 
 palette_generator:
-  num_colors: 25
+  num_colors: 40
 
 output:
   directory: output
